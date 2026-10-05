@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+source-simulator/generated/
+source-simulator/build/
+source-simulator/dist/
