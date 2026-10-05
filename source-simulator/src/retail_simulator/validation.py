@@ -273,7 +273,10 @@ class Validator:
         allocated = b.get("payment_allocations", [])
         for order in orders.values():
             items = [l for l in lines.values() if l["order_id"] == order["order_id"]]
-            require(bool(items), "Accepted order has no lines")
+            require(
+                bool(items) or order["order_status"] == "draft",
+                "Accepted order has no lines",
+            )
             require(
                 (order["channel"] == "store") == (order["origin_store_id"] is not None),
                 "Store origin rule",
@@ -296,7 +299,19 @@ class Validator:
                 + order["shipping_tax_amount"],
                 "Order total equation",
             )
-            require(order["placed_at"] is not None, "Seed accepted order placement")
+            require(
+                (order["placed_at"] is None) == (order["order_status"] == "draft"),
+                "Order placement state",
+            )
+            require(
+                (order["cancelled_at"] is not None)
+                == (order["order_status"] == "cancelled"),
+                "Order cancellation timestamp",
+            )
+            require(
+                (order["closed_at"] is not None) == (order["order_status"] == "closed"),
+                "Order closure timestamp",
+            )
         for address in b.get("order_addresses", []):
             require(
                 (address["source_customer_id"] is None)
@@ -414,6 +429,37 @@ class Validator:
                         and ship["carrier"] is None,
                         "Store delivery semantics",
                     )
+            if ship["shipment_status"] in {"ready", "handed_over"}:
+                require(
+                    ship["ready_at"] is not None
+                    and ship["ready_at"] >= ship["planned_at"],
+                    "Shipment ready milestone",
+                )
+            if ship["shipment_status"] == "handed_over":
+                require(
+                    ship["handed_over_at"] is not None
+                    and ship["handed_over_at"] >= ship["ready_at"]
+                    and ship["delivered_at"] is None
+                    and bool(ship["carrier"])
+                    and bool(ship["tracking_number"])
+                    and ship["fulfillment_type"] == "ship",
+                    "Carrier handover milestones",
+                )
+            if ship["shipment_status"] in {
+                "planned",
+                "allocated",
+                "ready",
+                "cancelled",
+            }:
+                require(
+                    ship["handed_over_at"] is None and ship["delivered_at"] is None,
+                    "Premature handover",
+                )
+            require(
+                (ship["cancelled_at"] is not None)
+                == (ship["shipment_status"] == "cancelled"),
+                "Shipment cancellation timestamp",
+            )
         for item in return_items.values():
             q, a, r, restock, dispose = (
                 item[k]
@@ -428,7 +474,7 @@ class Validator:
             require(
                 q > 0
                 and 0 <= r <= a <= q
-                and restock + dispose == r
+                and restock + dispose <= r
                 and min(restock, dispose) >= 0,
                 "Return quantities",
             )
@@ -451,8 +497,19 @@ class Validator:
                 "Return original-price entitlement",
             )
             require(
-                item["last_received_at"] <= item["inspected_at"], "Inspection ordering"
+                (item["last_received_at"] is not None) == (r > 0),
+                "Return receipt timestamp",
             )
+            if item["disposition"] == "pending":
+                require(item["inspected_at"] is None, "Pending inspection timestamp")
+            else:
+                require(
+                    r > 0
+                    and restock + dispose == r
+                    and item["inspected_at"] is not None
+                    and item["last_received_at"] <= item["inspected_at"],
+                    "Inspection ordering/quantities",
+                )
         for r in returns.values():
             require(
                 (r["receiving_store_id"] is None)
@@ -495,14 +552,33 @@ class Validator:
                     ),
                     "Return header/line amounts",
                 )
-            require(
-                r["requested_at"]
-                <= r["authorized_at"]
-                <= r["first_received_at"]
-                <= r["fully_received_at"]
-                <= r["resolved_at"],
-                "Return milestone ordering",
-            )
+            milestones = [
+                r[k]
+                for k in (
+                    "requested_at",
+                    "authorized_at",
+                    "first_received_at",
+                    "fully_received_at",
+                    "resolved_at",
+                )
+                if r[k] is not None
+            ]
+            require(milestones == sorted(milestones), "Return milestone ordering")
+            if r["return_status"] in {
+                "authorized",
+                "partially_received",
+                "received",
+                "closed",
+            }:
+                require(
+                    r["authorized_at"] is not None, "Return authorization timestamp"
+                )
+            if r["return_status"] in {"received", "closed"}:
+                require(
+                    r["fully_received_at"] is not None
+                    and r["first_received_at"] is not None,
+                    "Return receipt milestones",
+                )
             settled = sum(
                 (
                     p["amount"]
@@ -512,7 +588,12 @@ class Validator:
                 ),
                 ZERO,
             )
-            require(settled == r["refund_total"], "Closed return settlement")
+            require(settled <= r["refund_total"], "Return settlement cap")
+            if r["return_status"] == "closed":
+                require(
+                    r["resolved_at"] is not None and settled == r["refund_total"],
+                    "Closed return settlement",
+                )
         for payment in payments.values():
             require(
                 payment["currency_code"] == orders[payment["order_id"]]["currency_code"]
@@ -532,6 +613,11 @@ class Validator:
                 == (payment["payment_status"] == "pending"),
                 "Payment terminal timestamp",
             )
+            if payment["processed_at"] is not None:
+                require(
+                    payment["processed_at"] >= payment["attempted_at"],
+                    "Payment processing chronology",
+                )
             require(
                 (payment["failure_code"] is not None)
                 == (payment["payment_status"] == "failed"),
@@ -691,10 +777,12 @@ class Validator:
                     "Sale movement vector",
                 )
                 sale_totals[m["shipment_item_id"]] -= vector[0]
-            elif kind == "reserve":
+            elif kind in {"reserve", "release"}:
                 require(
-                    vector[0] == 0 and vector[1] > 0 and vector[2] == 0,
-                    "Reserve vector",
+                    vector[0] == 0
+                    and (vector[1] > 0 if kind == "reserve" else vector[1] < 0)
+                    and vector[2] == 0,
+                    "Reservation vector",
                 )
             elif kind in ("quarantine", "unquarantine"):
                 require(

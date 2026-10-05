@@ -2,6 +2,8 @@
 
 KAN-24 implements reproducible **relational seed snapshots** for Rocky Mountain Retail Group (17 PostgreSQL tables) and Stampede City Commerce (seven MySQL tables). It follows the approved [Rocky Mountain dictionary](../docs/source-data-model/rocky-mountain-retail-group/README.md), [Stampede dictionary](../docs/source-data-model/stampede-city-commerce/README.md), and [matching strategy](../docs/source-data-model/cross-company-mappings/README.md). The user-approved contracts govern implementation despite their historical “proposed” headings.
 
+KAN-25 extends these models with [continuous database changes](docs/continuous-changes.md): a rate-controlled local source state, durable transaction journal, business lifecycle commands, and a PostgreSQL/MySQL transaction writer for later database integration. The seed CLI and immutable seed output remain available separately.
+
 ## Run locally
 
 Python 3.11+ with IANA timezone data is required. Runtime and tests use the standard library; no Faker, database, credentials, or cloud access is needed. From the repository root:
