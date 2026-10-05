@@ -1,0 +1,11 @@
+{
+  "events": 200,
+  "seed": 26,
+  "duplicate_fraction": 0.05,
+  "late_fraction": 0.10,
+  "reorder_fraction": 0.10,
+  "late_slots": 120,
+  "reorder_slots": 5,
+  "rmrg_weight": 3,
+  "scc_weight": 1
+}
