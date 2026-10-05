@@ -567,7 +567,7 @@ class Generator:
             )
         self.movement(inv, "reserve", 0, qty, 0, stamp, "allocation")
 
-    def rmrg_orders(self) -> Iterator[Bundle]:
+    def rmrg_orders(self, order_stamp: datetime | None = None) -> Iterator[Bundle]:
         c, rng = self.config, self.random
         # Process chronological business events; sorting only O(days), never O(orders).
         day_counts: dict[datetime, int] = defaultdict(int)
@@ -575,7 +575,11 @@ class Generator:
             day_counts[self.stamp().replace(hour=0, minute=0)] += 1
         for day, count in sorted(day_counts.items()):
             for sequence in range(count):
-                stamp = day + timedelta(hours=15, seconds=sequence)
+                stamp = (
+                    order_stamp
+                    if order_stamp is not None
+                    else day + timedelta(hours=15, seconds=sequence)
+                )
                 b: Bundle = defaultdict(list)
                 oid = self.id("orders")
                 customer_id = (
@@ -588,6 +592,7 @@ class Generator:
                     if customer_id
                     else None
                 )
+                customer_id = customer["customer_id"] if customer else None
                 channel = rng.choices(
                     ["store", "web", "mobile", "call_center"], [50, 30, 17, 3]
                 )[0]
@@ -703,7 +708,13 @@ class Generator:
                     if role == "shipping":
                         address_id = address_id_value
                     saved = (
-                        self.masters["rmrg"]["customer_addresses"][customer_id - 1]
+                        next(
+                            a
+                            for a in self.masters["rmrg"]["customer_addresses"]
+                            if a["customer_id"] == customer_id
+                            and a["is_default_billing"]
+                            and a["archived_at"] is None
+                        )
                         if customer_id
                         else None
                     )
@@ -715,7 +726,9 @@ class Generator:
                         order_id=oid,
                         address_role=role,
                         source_customer_id=customer_id,
-                        source_customer_address_id=customer_id,
+                        source_customer_address_id=(
+                            saved["customer_address_id"] if saved else None
+                        ),
                         recipient_name=(
                             saved["recipient_name"] if saved else "Guest Recipient"
                         ),
@@ -1058,7 +1071,8 @@ class Generator:
 
     def scc_orders(self) -> Iterator[Bundle]:
         c, rng = self.config, self.random
-        for oid in range(1, c.scc_orders + 1):
+        for _ in range(c.scc_orders):
+            oid = self.id("sales_orders")
             stamp = (
                 self.stamp()
                 .astimezone(ZoneInfo("America/Edmonton"))
@@ -1070,7 +1084,11 @@ class Generator:
                 self.weighted_id(c.scc_customers) - 1
             ]
             if rng.random() < c.guest_fraction:
-                customer = self.masters["scc"]["customer_master"][c.scc_customers - 5]
+                customer = next(
+                    v
+                    for v in self.masters["scc"]["customer_master"]
+                    if v["customer_type"] == "WALKIN"
+                )
             loc = rng.randint(1, c.scc_locations)
             credit = dirty and oid % 3 == 0
             for number in range(
