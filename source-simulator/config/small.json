@@ -1,0 +1,9 @@
+{
+  "seed": 24,
+  "rmrg_customers": 60,
+  "scc_customers": 24,
+  "rmrg_products": 30,
+  "scc_products": 16,
+  "rmrg_orders": 180,
+  "scc_orders": 60
+}
