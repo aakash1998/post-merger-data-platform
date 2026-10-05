@@ -6,6 +6,8 @@ A production-style data engineering project that unifies data after the acquisit
 
 The two companies operate different source systems, schemas, identifiers, refresh patterns, and data-quality standards. Leadership needs one trusted platform for customer, sales, finance, inventory, and operational analytics without first replacing the operational applications.
 
+See [merger analytics business questions](docs/merger-analytics-questions.md) for the proposed KPIs, source domains, and reporting marts.
+
 ## Target Architecture
 
 - Rocky Mountain Retail Group: Aiven PostgreSQL
