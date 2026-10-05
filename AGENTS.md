@@ -27,6 +27,7 @@ Build a production-style post-merger enterprise data platform for:
 - Use Python type hints and structured logging.
 - Add automated tests for meaningful behavior.
 - Prefer configuration-driven logic over duplication.
+- Follow [environment and naming conventions](docs/environment-naming-conventions.md); select dev/test/prod explicitly through configuration and keep environment targets separate.
 - Document assumptions and tradeoffs.
 - Do not introduce new technologies without a clear reason.
 
