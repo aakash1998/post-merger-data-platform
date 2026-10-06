@@ -5,3 +5,8 @@ __pycache__/
 source-simulator/generated/
 source-simulator/build/
 source-simulator/dist/
+.env
+.env.*
+!.env.example
+*.pem
+.secrets/
