@@ -32,9 +32,19 @@ Layer is `bronze`, `silver` or `gold`; scope is rmrg/scc/enterprise. Environment
 
 ## Kafka
 
-Business event topic template: `pmdp-<env>-<company>-<domain>-<event>-v<major>`. Use lowercase letters/digits/hyphens only, with tokens also hyphenated; do not mix dots/underscores into topic names. Examples: `pmdp-dev-rmrg-orders-created-v1`, `pmdp-test-scc-orders-created-v1`. The example event names do not approve event schemas or require new producers.
+Business event topic template: `pmdp-<env>-<company>-<domain>-events-v<major>`. KAN-31 replaces event-per-topic routing with five domain topics to fit the Aiven Free topic limit. Use lowercase letters/digits/hyphens. Every event retains its original `event_type` and versioned payload; consumers dispatch by event_type within each topic.
 
-Use major-version suffixes for incompatible event contracts; compatible evolution stays in the existing topic under the agreed contract. No dates, Jira keys or customer IDs in topic names. Consumer group template: `pmdp-<env>-<scope>-<consumer>`, e.g. `pmdp-dev-rmrg-bronze-orders`. Environment must be explicit even when clusters are separated. Database CDC is not re-routed through Kafka. Partition/retention/schema compatibility settings belong to later contracts, not this naming ticket.
+| Dev topic | Event types |
+| --- | --- |
+| pmdp-dev-rmrg-commerce-events-v1 | orders-placed, orders-cancelled, payments-resolved, shipments-handed-over, shipments-delivered, returns-requested, returns-received |
+| pmdp-dev-rmrg-inventory-events-v1 | inventory-moved |
+| pmdp-dev-rmrg-shopping-events-v1 | shopping-viewed, shopping-added |
+| pmdp-dev-scc-commerce-events-v1 | orders-entered, payments-posted |
+| pmdp-dev-scc-activity-events-v1 | inventory-observed, shopping-viewed, shopping-added |
+
+Test uses the same routing with `pmdp-test-` names and separate credentials/service. KAN-31 provisions dev/test only: one partition per topic, delete cleanup, a three-day retention target with documented platform-enforced retention, and disabled broker automatic topic creation. See the [provisioning runbook](../infrastructure/kafka/README.md).
+
+Use major-version suffixes for incompatible event contracts; compatible evolution stays in the existing topic under the agreed contract. No dates, Jira keys or customer IDs in topic names. Consumer group template: `pmdp-<env>-<scope>-<consumer>`, e.g. `pmdp-dev-rmrg-bronze-orders`. Environment must be explicit even when clusters are separated. Database CDC remains DMS -> S3.
 
 ## Databricks
 
@@ -60,11 +70,11 @@ Select environment via required `PMDP_ENV=dev|test|prod`. Project-defined variab
 | PMDP_RMRG_POSTGRES_HOST, PMDP_RMRG_POSTGRES_DATABASE | Connection targets; schema remains rmrg |
 | PMDP_SCC_MYSQL_HOST, PMDP_SCC_MYSQL_DATABASE | Connection targets; database remains scc |
 | PMDP_RMRG_SOURCE_INSTANCE, PMDP_SCC_SOURCE_INSTANCE | Stable registered source instance names |
-| PMDP_KAFKA_BOOTSTRAP_SERVERS, PMDP_KAFKA_RMRG_ORDERS_TOPIC | Resolved cluster endpoint and explicit topic name |
+| PMDP_KAFKA_BOOTSTRAP_SERVERS, PMDP_KAFKA_SERVICE | SASL endpoint and environment-specific service; five topics selected by infrastructure config |
 | PMDP_DATABRICKS_HOST, PMDP_DATABRICKS_CATALOG | Environment workspace/endpoint and catalog, e.g. pmdp_dev |
 | PMDP_SNOWFLAKE_ACCOUNT, PMDP_SNOWFLAKE_DATABASE | Account and database, e.g. PMDP_DEV_ANALYTICS |
 | PMDP_SNOWFLAKE_WAREHOUSE | Actual selected workload warehouse |
 
 Project config keys use lowercase snake_case; documented environment-variable overrides take precedence over selected environment config, followed by shared nonsecret defaults. Never default environment/host/database/bucket/catalog/topic targets silently; verify all selected targets agree with PMDP_ENV. Secrets are injected separately, have no checked-in/default values and must not appear in logs. Standard provider/tool variables, e.g. AWS_REGION or AIRFLOW_CONN_* where required, retain their vendor names; document any mapping from project settings and do not let conflicting values choose a different environment silently.
 
-Future checked-in nonsecret environment config belongs under `infrastructure/config/<env>.<format>` (one format chosen when implementation starts), with shared defaults documented there. No config files are created now. Developer `.env` files stay untracked; templates may contain placeholders only. Missing/malformed required targets fail validation rather than selecting production. Naming/config choices are reusable across Airflow, Databricks, Snowflake and dbt without hardcoding company credentials or changing the architecture.
+Checked-in nonsecret environment config belongs under `infrastructure/config/<env>.<format>` (one format chosen when implementation starts), with shared defaults documented there. KAN-31 selects JSON: `infrastructure/config/dev.json` and `test.json` define Kafka policy. Developer `.env` files stay untracked; templates may contain placeholders only. Missing/malformed required targets fail validation rather than selecting production. Naming/config choices are reusable across Airflow, Databricks, Snowflake and dbt without hardcoding company credentials or changing the architecture.

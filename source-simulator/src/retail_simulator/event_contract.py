@@ -9,27 +9,53 @@ from typing import Any
 
 from .snapshot import encode
 
-TYPES = {
+# KAN-31: transport domains share topics; event semantics/identities remain v1.
+TOPIC_GROUPS = {
     "rmrg": {
-        "orders-placed",
-        "orders-cancelled",
-        "payments-resolved",
-        "shipments-handed-over",
-        "shipments-delivered",
-        "returns-requested",
-        "returns-received",
-        "inventory-moved",
-        "shopping-viewed",
-        "shopping-added",
+        "commerce": (
+            "orders-placed",
+            "orders-cancelled",
+            "payments-resolved",
+            "shipments-handed-over",
+            "shipments-delivered",
+            "returns-requested",
+            "returns-received",
+        ),
+        "inventory": ("inventory-moved",),
+        "shopping": ("shopping-viewed", "shopping-added"),
     },
     "scc": {
-        "orders-entered",
-        "payments-posted",
-        "inventory-observed",
-        "shopping-viewed",
-        "shopping-added",
+        "commerce": ("orders-entered", "payments-posted"),
+        "activity": ("inventory-observed", "shopping-viewed", "shopping-added"),
     },
 }
+TYPES = {
+    company: {kind for kinds in groups.values() for kind in kinds}
+    for company, groups in TOPIC_GROUPS.items()
+}
+ROUTES = {
+    (company, kind): domain
+    for company, groups in TOPIC_GROUPS.items()
+    for domain, kinds in groups.items()
+    for kind in kinds
+}
+
+
+def topic_name(env: str, company: str, kind: str) -> str:
+    """Resolve an approved event to one of five environment-qualified topics."""
+    if env not in {"dev", "test"} or (company, kind) not in ROUTES:
+        raise ValueError("Invalid environment/company/event type")
+    return f"pmdp-{env}-{company}-{ROUTES[(company, kind)]}-events-v1"
+
+
+def expected_topics(env: str) -> tuple[str, ...]:
+    if env not in {"dev", "test"}:
+        raise ValueError("Kafka simulator topics require dev/test")
+    return tuple(
+        f"pmdp-{env}-{company}-{domain}-events-v1"
+        for company, groups in TOPIC_GROUPS.items()
+        for domain in groups
+    )
 
 
 def utc(value: datetime) -> str:
@@ -50,8 +76,7 @@ class Record:
         kind = event["event_type"]
         if env not in {"dev", "test"} or kind not in TYPES.get(company, set()):
             raise ValueError("Invalid environment/company/event type")
-        domain, action = kind.split("-", 1)
-        expected = f"pmdp-{env}-{company}-{domain}-{action}-v1"
+        expected = topic_name(env, company, kind)
         if self.topic != expected or self.key != event["aggregate_key"]:
             raise ValueError("Topic/key mismatch")
         if event["event_version"] != 1 or event["payload_version"] != 1:
@@ -108,9 +133,6 @@ def make_record(
         "payload": payload,
         "provenance": provenance,
     }
-    domain, action = kind.split("-", 1)
-    record = Record(
-        f"pmdp-{env}-{company}-{domain}-{action}-v1", key, encode(event).strip()
-    )
+    record = Record(topic_name(env, company, kind), key, encode(event).strip())
     record.validate(env)
     return record

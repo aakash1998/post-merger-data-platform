@@ -11,7 +11,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from retail_simulator.event_contract import Record
+from retail_simulator.event_contract import Record, expected_topics, topic_name
 from retail_simulator.event_producer import LocalProducer
 from retail_simulator.scenarios import (
     ScenarioConfig,
@@ -52,6 +52,17 @@ class ScenarioTests(unittest.TestCase):
                     self.assertEqual(
                         (first / filename).read_bytes(),
                         (second / filename).read_bytes(),
+                    )
+                deliveries = json.loads((first / "events/plan.json").read_text())[
+                    "deliveries"
+                ]
+                for delivery in deliveries:
+                    record = Record(**delivery["record"])
+                    event = record.validate("test")
+                    self.assertIn(record.topic, expected_topics("test"))
+                    self.assertEqual(
+                        record.topic,
+                        topic_name("test", event["company"], event["event_type"]),
                     )
                 self.assertEqual(build(cfg, first, "test"), m1)
 
