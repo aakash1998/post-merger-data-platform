@@ -13,6 +13,7 @@ dependencies = []
 pmdp-seed = "retail_simulator.__main__:main"
 pmdp-change = "retail_simulator.continuous:main"
 pmdp-event = "retail_simulator.events:main"
+pmdp-scenario = "retail_simulator.scenarios:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

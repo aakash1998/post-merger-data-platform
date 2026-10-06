@@ -1,5 +1,7 @@
 # Source Simulator
 
+KAN-27 adds [deterministic named scenarios](docs/deterministic-scenarios.md) that reuse all three generators with fixed seeds/clocks, exact artifact comparison, and failure/replay controls. Run `python -m retail_simulator.scenarios --list` or installed `pmdp-scenario`.
+
 KAN-26 adds the [Kafka business event generator](docs/kafka-events.md): versioned source-qualified events, weighted shopping activity, configurable duplicate/late/out-of-order delivery, durable local replay, and an acknowledged producer interface for later Aiven integration. Run locally with `python -m retail_simulator.events` or installed `pmdp-event`.
 
 KAN-24 implements reproducible **relational seed snapshots** for Rocky Mountain Retail Group (17 PostgreSQL tables) and Stampede City Commerce (seven MySQL tables). It follows the approved [Rocky Mountain dictionary](../docs/source-data-model/rocky-mountain-retail-group/README.md), [Stampede dictionary](../docs/source-data-model/stampede-city-commerce/README.md), and [matching strategy](../docs/source-data-model/cross-company-mappings/README.md). The user-approved contracts govern implementation despite their historical “proposed” headings.

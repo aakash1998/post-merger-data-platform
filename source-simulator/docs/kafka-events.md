@@ -1,5 +1,7 @@
 # Kafka event generator — KAN-26
 
+For exact independent-run reproduction (including stable run IDs/timestamps and scripted source context), use the [KAN-27 scenario runner](deterministic-scenarios.md). The standalone event CLI retains its fresh run UUID/time; both use the shared plan builder.
+
 Produces business events for the locked Kafka -> Databricks path. Local mode requires Python 3.11+, IANA timezone data and a completed KAN-24 snapshot; no broker, credentials, cloud services or new dependencies. It never modifies relational data. KAN-25 owns database changes; CDC remains DMS -> S3.
 
 This is a **simulator v1 event contract for review**, not approval/deployment of platform event contracts or Kafka topics. No approved event payload dictionary was found in the existing docs. Architecture and relational schemas are unchanged.

@@ -1,5 +1,7 @@
 # Continuous relational changes — KAN-25
 
+For scripted, exactly repeatable local command sequences and fixed business clocks, use the [KAN-27 scenario runner](deterministic-scenarios.md). The standalone continuous CLI retains its live clock and weighted activity selection.
+
 The simulator applies business commands over a KAN-24 baseline rather than replacing the seed repeatedly. Both sources produce inserts, updates and controlled deletes with their approved columns and source-qualified identities. No source schema, architecture, DMS configuration or Kafka contract changes are included.
 
 ## Run and resume
