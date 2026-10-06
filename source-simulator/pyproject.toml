@@ -9,14 +9,18 @@ description = "Reproducible relational seed snapshots for approved PMDP source c
 requires-python = ">=3.11"
 dependencies = []
 
+[project.optional-dependencies]
+database = ["psycopg[binary]>=3.2,<4", "PyMySQL>=1.1,<2"]
+
 [project.scripts]
 pmdp-seed = "retail_simulator.__main__:main"
 pmdp-change = "retail_simulator.continuous:main"
 pmdp-event = "retail_simulator.events:main"
 pmdp-scenario = "retail_simulator.scenarios:main"
+pmdp-load = "retail_simulator.deployment:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-retail_simulator = ["schema.json"]
+retail_simulator = ["schema.json", "ddl/*.sql"]
