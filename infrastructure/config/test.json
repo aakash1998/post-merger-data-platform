@@ -1,0 +1,18 @@
+{
+  "environment": "test",
+  "kafka": {
+    "service": "pmdp-test-enterprise-kafka",
+    "topics": [
+      "pmdp-test-rmrg-commerce-events-v1",
+      "pmdp-test-rmrg-inventory-events-v1",
+      "pmdp-test-rmrg-shopping-events-v1",
+      "pmdp-test-scc-commerce-events-v1",
+      "pmdp-test-scc-activity-events-v1"
+    ],
+    "partitions": 1,
+    "cleanup_policy": "delete",
+    "target_retention_ms": 259200000,
+    "replication_factor": 2,
+    "allow_auto_create_topics": false
+  }
+}

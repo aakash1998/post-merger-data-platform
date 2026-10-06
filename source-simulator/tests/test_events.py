@@ -12,7 +12,13 @@ from unittest.mock import patch
 
 from retail_simulator.changes import load_seed
 from retail_simulator.config import Config
-from retail_simulator.event_contract import Record, make_record
+from retail_simulator.event_contract import (
+    Record,
+    make_record,
+    expected_topics,
+    TYPES,
+    topic_name,
+)
 from retail_simulator.event_generation import EventConfig, facts, generate_records
 from retail_simulator.event_producer import KafkaProducerAdapter, LocalProducer
 from retail_simulator.events import prepare, run, validate_plan
@@ -63,6 +69,75 @@ class EventTests(unittest.TestCase):
             NOW,
             EventConfig(events=150, **kwargs),
         )
+
+    def test_all_fifteen_event_types_route_to_exact_five_topics(self):
+        expected = {
+            "pmdp-dev-rmrg-commerce-events-v1": {
+                "orders-placed",
+                "orders-cancelled",
+                "payments-resolved",
+                "shipments-handed-over",
+                "shipments-delivered",
+                "returns-requested",
+                "returns-received",
+            },
+            "pmdp-dev-rmrg-inventory-events-v1": {"inventory-moved"},
+            "pmdp-dev-rmrg-shopping-events-v1": {"shopping-viewed", "shopping-added"},
+            "pmdp-dev-scc-commerce-events-v1": {"orders-entered", "payments-posted"},
+            "pmdp-dev-scc-activity-events-v1": {
+                "inventory-observed",
+                "shopping-viewed",
+                "shopping-added",
+            },
+        }
+        observed = {}
+        for company, kinds in TYPES.items():
+            for kind in sorted(kinds):
+                record = make_record(
+                    "dev",
+                    company,
+                    kind,
+                    "order:1",
+                    "occurrence",
+                    NOW,
+                    NOW,
+                    {"original": "payload"},
+                    {"original": "provenance"},
+                )
+                event = record.validate("dev")
+                self.assertEqual(event["event_type"], kind)
+                self.assertEqual(event["payload"], {"original": "payload"})
+                self.assertEqual(event["provenance"], {"original": "provenance"})
+                observed.setdefault(record.topic, set()).add(kind)
+                self.assertEqual(
+                    record,
+                    make_record(
+                        "dev",
+                        company,
+                        kind,
+                        "order:1",
+                        "occurrence",
+                        NOW,
+                        NOW,
+                        {"original": "payload"},
+                        {"original": "provenance"},
+                    ),
+                )
+                legacy = f"pmdp-dev-{company}-{kind}-v1"
+                with self.assertRaisesRegex(ValueError, "Topic/key mismatch"):
+                    replace(record, topic=legacy).validate("dev")
+                with self.assertRaises(ValueError):
+                    replace(record, topic=record.topic.replace("dev", "test")).validate(
+                        "dev"
+                    )
+        self.assertEqual(observed, expected)
+        self.assertEqual(set(expected_topics("dev")), set(expected))
+        self.assertEqual(sum(map(len, TYPES.values())), 15)
+        self.assertEqual(len(expected_topics("test")), 5)
+        with self.assertRaises(ValueError):
+            topic_name("prod", "rmrg", "orders-placed")
+        with self.assertRaises(ValueError):
+            topic_name("dev", "scc", "orders-placed")
 
     def test_fact_payloads_match_source_and_do_not_mutate(self):
         original = deepcopy(self.data)

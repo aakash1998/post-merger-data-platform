@@ -65,6 +65,10 @@ PMDP_ENV=dev PYTHONPATH=source-simulator/src python3 -m retail_simulator.scenari
 
 Resolved seed defaults: start_date 2025-01-01, days 30, RMRG/SCC customers 24/16, products 16/12, both order counts zero, RMRG stores/warehouses 2/1, SCC locations 2, max_lines 3. Remaining KAN-24 defaults (including cross-company overlap) apply. Changing the seed date window may require moving clock_start forward. Recipes require a **masters-only baseline with zero initial orders** so prerequisite selection and lifecycle coverage remain controlled; source changes create the transaction facts. For general historical datasets use the existing seed CLI. `scc_messy` intentionally overrides a supplied messy_fraction to 1 and records the resolved value in the manifest.
 
+## KAN-31 topic routing
+
+All eight recipes use the same five-domain routing as KAN-26. Tests validate each generated delivery against its company/event_type domain while comparing exact artifact bytes across independent runs and different Python hash seeds. Event types, payload semantics, source mutations and delivery edge behavior are preserved. Use new output directories after this implementation change: the implementation fingerprint rejects previous bundles, and legacy topic routes fail validation. Real Aiven provisioning and smoke validation are separate from these local recipes; see the [runbook](../../infrastructure/kafka/README.md).
+
 ## Exact reproduction boundary
 
 There are no wall-clock business timestamps or fresh UUIDs in scenario artifacts. Seeds go to local PRNGs, commands use the fixed virtual clock, and the event run ID derives from the canonical scenario fingerprint. Every event plan uses KAN-26's shared create_plan function. Events draw from the **final scenario source state**, so cancellation/return/refund milestones are available. Its snapshot_fingerprint represents the final-state hash rather than the initial seed export; seed provenance remains separately recorded. produced_at is one logical step after the last script command. Existing KAN-26 historical-fact versus simulated-session semantics remain intact.

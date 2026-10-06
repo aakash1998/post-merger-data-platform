@@ -1,0 +1,182 @@
+{
+  "ticket": "KAN-31",
+  "roundtrip": {
+    "results": [
+      {
+        "auto_create_topics": false,
+        "environment": "dev",
+        "event": "kafka_topics_validated",
+        "plan": "free-0",
+        "service": "pmdp-dev-enterprise-kafka",
+        "topics": [
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-rmrg-commerce-events-v1"
+          },
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-rmrg-inventory-events-v1"
+          },
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-rmrg-shopping-events-v1"
+          },
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-scc-commerce-events-v1"
+          },
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-scc-activity-events-v1"
+          }
+        ]
+      },
+      {
+        "event": "kafka_roundtrip_validated",
+        "records": [
+          {
+            "event_id": "196e08ca4740e214cfb4ab48184d07a8b23536b5e04da34af267b0d1691e2565",
+            "event_type": "orders-placed",
+            "offset": 0,
+            "partition": 0,
+            "topic": "pmdp-dev-rmrg-commerce-events-v1"
+          },
+          {
+            "event_id": "258769048e7ac793ff452f5d15d3e0af4b0785dc19378afc8b88057793719bcc",
+            "event_type": "inventory-moved",
+            "offset": 0,
+            "partition": 0,
+            "topic": "pmdp-dev-rmrg-inventory-events-v1"
+          },
+          {
+            "event_id": "65dfc759e872c1b9bc010d2b6902f9d174cc655337ccbfedd8323f0ae80689b2",
+            "event_type": "shopping-viewed",
+            "offset": 0,
+            "partition": 0,
+            "topic": "pmdp-dev-rmrg-shopping-events-v1"
+          },
+          {
+            "event_id": "c8e61cc2846c24910cd6f8e98a534b453e7222a820eeb02efb6a714837c63c60",
+            "event_type": "payments-posted",
+            "offset": 0,
+            "partition": 0,
+            "topic": "pmdp-dev-scc-commerce-events-v1"
+          },
+          {
+            "event_id": "fe255ea2d8bab45a84afdb415f4167c26a8ecda3b1caf350d5fafcd6ebbf3a51",
+            "event_type": "inventory-observed",
+            "offset": 0,
+            "partition": 0,
+            "topic": "pmdp-dev-scc-activity-events-v1"
+          }
+        ],
+        "run_id": "e91cdc93-7031-43bd-b2a5-27da29ccc2ff",
+        "service": "pmdp-dev-enterprise-kafka"
+      }
+    ],
+    "ticket": "KAN-31",
+    "validated_at": "2026-10-06T04:08:08.753982+00:00"
+  },
+  "repeat_apply": {
+    "mutations": [],
+    "results": [
+      {
+        "auto_create_topics": false,
+        "environment": "dev",
+        "event": "kafka_topics_validated",
+        "plan": "free-0",
+        "service": "pmdp-dev-enterprise-kafka",
+        "topics": [
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-rmrg-commerce-events-v1"
+          },
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-rmrg-inventory-events-v1"
+          },
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-rmrg-shopping-events-v1"
+          },
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-scc-commerce-events-v1"
+          },
+          {
+            "actual_retention_ms": 259200000,
+            "cleanup_policy": "delete",
+            "partitions": 1,
+            "replication_factor": 2,
+            "retention_bytes": "-1",
+            "retention_source": "target",
+            "target_retention_ms": 259200000,
+            "topic": "pmdp-dev-scc-activity-events-v1"
+          }
+        ]
+      }
+    ],
+    "ticket": "KAN-31",
+    "validated_at": "2026-10-06T04:08:55.436997+00:00"
+  },
+  "offline_tests": {
+    "run": 80,
+    "passed": 78,
+    "skipped": 2,
+    "skips": "Opt-in PostgreSQL/MySQL integration tests; outside KAN-31"
+  }
+}

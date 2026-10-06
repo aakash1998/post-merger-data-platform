@@ -63,3 +63,5 @@ This delivery sequence implements the [current architecture](docs/architecture.m
 - Recovery tests and operational documentation grow with each component; Phase 10 proves the integrated result rather than deferring these requirements until the end.
 
 Advance only when the preceding gate has recorded review and relevant validation evidence, with no unresolved blocker for the dependent work. Independent preparation may overlap (for example, simulator development and Aiven setup after contract agreement, or Airflow scaffolding once job interfaces are stable); it does not bypass a gate or authorize ingestion during Phase 1. Use the current repository company names where older Jira descriptions use earlier names; the architecture remains unchanged.
+
+Aiven Kafka topic setup: [KAN-31 provisioning and validation runbook](infrastructure/kafka/README.md).
