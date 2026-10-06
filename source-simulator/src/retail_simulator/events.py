@@ -14,7 +14,7 @@ import time
 from typing import Any, Callable
 import uuid
 
-from .changes import load_seed
+from .changes import Database, load_seed
 from .config import environment
 from .event_contract import Record
 from .event_generation import EventConfig, generate_records
@@ -39,18 +39,33 @@ def validate_plan(plan: dict[str, Any], env: str) -> None:
 def prepare(snapshot: Path, env: str, cfg: EventConfig) -> dict[str, Any]:
     data = load_seed(snapshot, env)
     manifest = json.loads((snapshot / "manifest.json").read_text(encoding="utf-8"))
-    run_id = str(uuid.uuid4())
-    started = datetime.now(timezone.utc)
-    deliveries = generate_records(
-        data, env, manifest["fingerprint"], run_id, started, cfg
+    return create_plan(
+        data,
+        env,
+        cfg,
+        manifest["fingerprint"],
+        str(uuid.uuid4()),
+        datetime.now(timezone.utc),
     )
+
+
+def create_plan(
+    data: Database,
+    env: str,
+    cfg: EventConfig,
+    source_fingerprint: str,
+    run_id: str,
+    started: datetime,
+) -> dict[str, Any]:
+    """Shared plan construction with explicit identity/time for scenario controls."""
+    deliveries = generate_records(data, env, source_fingerprint, run_id, started, cfg)
     plan = {
         "version": 1,
         "environment": env,
         "run_id": run_id,
         "config": asdict(cfg),
         "generated_at": started.isoformat(),
-        "snapshot_fingerprint": manifest["fingerprint"],
+        "snapshot_fingerprint": source_fingerprint,
         "sha256": hashlib.sha256(encode(deliveries).encode()).hexdigest(),
         "deliveries": deliveries,
     }
