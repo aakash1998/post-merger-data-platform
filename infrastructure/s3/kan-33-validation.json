@@ -1,0 +1,39 @@
+{
+  "ticket": "KAN-33",
+  "validated_at": "2026-10-08T17:22:19.174483+00:00",
+  "environment": "dev",
+  "account_id": "430086246924",
+  "region": "us-east-2",
+  "bucket": "pmdp-dev-landing-us-east-2-430086246924",
+  "private": true,
+  "bucket_policy": "absent",
+  "public_access_block": {
+    "BlockPublicAcls": true,
+    "IgnorePublicAcls": true,
+    "BlockPublicPolicy": true,
+    "RestrictPublicBuckets": true
+  },
+  "object_ownership": "BucketOwnerEnforced",
+  "encryption": "AES256",
+  "versioning": "Enabled",
+  "tags": {
+    "Role": "landing",
+    "Project": "pmdp",
+    "Environment": "dev",
+    "ManagedBy": "pmdp-s3-provisioner"
+  },
+  "prefixes": [
+    "cdc/rmrg/",
+    "cdc/scc/",
+    "batch/scc/",
+    "schemas/",
+    "checkpoints/",
+    "replay/"
+  ],
+  "cdc_base_prefixes": {
+    "rmrg": "cdc/rmrg",
+    "scc": "cdc/scc"
+  },
+  "changes": [],
+  "validation": "passed"
+}
