@@ -1,0 +1,537 @@
+{
+  "ticket": "KAN-34",
+  "validated_at": "2026-10-08T17:35:35.569201+00:00",
+  "environment": "dev",
+  "account_id": "430086246924",
+  "region": "us-east-2",
+  "bucket": "pmdp-dev-landing-us-east-2-430086246924",
+  "resolved": {
+    "role_name": "pmdp-dev-enterprise-dms-s3",
+    "role_arn": "arn:aws:iam::430086246924:role/pmdp-dev-enterprise-dms-s3",
+    "inline_policy_name": "pmdp-dev-enterprise-dms-s3-write"
+  },
+  "trust_policy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "dms.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole",
+        "Condition": {
+          "StringEquals": {
+            "aws:SourceAccount": "430086246924"
+          },
+          "ArnLike": {
+            "aws:SourceArn": "arn:aws:dms:us-east-2:430086246924:*"
+          }
+        }
+      }
+    ]
+  },
+  "permission_policy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "WriteCDCObjects",
+        "Effect": "Allow",
+        "Action": [
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:PutObjectTagging"
+        ],
+        "Resource": [
+          "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg/*",
+          "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/scc/*"
+        ]
+      },
+      {
+        "Sid": "ListCDCPrefixes",
+        "Effect": "Allow",
+        "Action": "s3:ListBucket",
+        "Resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+        "Condition": {
+          "StringLike": {
+            "s3:prefix": [
+              "cdc/rmrg",
+              "cdc/rmrg/*",
+              "cdc/scc",
+              "cdc/scc/*"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "tags": {
+    "Project": "pmdp",
+    "Environment": "dev",
+    "Role": "dms-s3-target",
+    "ManagedBy": "pmdp-dms-iam-provisioner"
+  },
+  "access_analyzer": {
+    "trust": "no findings",
+    "permissions": "no findings"
+  },
+  "simulations": [
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg/namespace/table/probe.csv",
+      "prefix": null,
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg/namespace/table/probe.csv",
+      "prefix": null,
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg/namespace/table/probe.csv",
+      "prefix": null,
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "cdc/rmrg",
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "cdc/rmrg/",
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "cdc/rmrg/namespace/table/",
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/scc/namespace/table/probe.csv",
+      "prefix": null,
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/scc/namespace/table/probe.csv",
+      "prefix": null,
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/scc/namespace/table/probe.csv",
+      "prefix": null,
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "cdc/scc",
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "cdc/scc/",
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "cdc/scc/namespace/table/",
+      "decision": "allowed",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "",
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "cdc/",
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "cdc/rmrg-escape/",
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg-escape/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg-escape/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg-escape/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "batch/scc/",
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/batch/scc/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/batch/scc/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/batch/scc/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "schemas/",
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/schemas/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/schemas/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/schemas/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "checkpoints/",
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/checkpoints/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/checkpoints/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/checkpoints/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": "replay/",
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/replay/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/replay/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/replay/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:GetObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectAcl",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObjectVersion",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924/cdc/rmrg/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924-other/cdc/rmrg/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteObject",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924-other/cdc/rmrg/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:PutObjectTagging",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924-other/cdc/rmrg/probe.csv",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924-other",
+      "prefix": "cdc/rmrg/",
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:ListBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "s3:DeleteBucket",
+      "resource": "arn:aws:s3:::pmdp-dev-landing-us-east-2-430086246924",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    },
+    {
+      "action": "iam:CreateUser",
+      "resource": "*",
+      "prefix": null,
+      "decision": "implicitDeny",
+      "organizations": {
+        "AllowedByOrganizations": true
+      }
+    }
+  ],
+  "unrelated_iam_before_sha256": "948f2bd133cd6f170090dc1ac09e9d89a7ca7b030cb157c33c918b1798860d82",
+  "unrelated_iam_after_sha256": "948f2bd133cd6f170090dc1ac09e9d89a7ca7b030cb157c33c918b1798860d82",
+  "changes": [],
+  "validation": "passed",
+  "limitations": [
+    "Trust validated structurally and by Access Analyzer; live DMS assumption/endpoint test deferred until runtime exists.",
+    "Simulator does not prove SCP/session policy/network behavior; bucket configuration independently validated."
+  ]
+}

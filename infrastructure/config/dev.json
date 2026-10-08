@@ -24,5 +24,10 @@
     "target_retention_ms": 259200000,
     "replication_factor": 2,
     "allow_auto_create_topics": false
+  },
+  "dms_s3_iam": {
+    "role_name": "pmdp-dev-enterprise-dms-s3",
+    "role_arn": "arn:aws:iam::430086246924:role/pmdp-dev-enterprise-dms-s3",
+    "inline_policy_name": "pmdp-dev-enterprise-dms-s3-write"
   }
 }
