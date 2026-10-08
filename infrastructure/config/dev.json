@@ -1,5 +1,15 @@
 {
   "environment": "dev",
+  "aws": {
+    "account_id": "430086246924",
+    "region": "us-east-2"
+  },
+  "s3_landing": {
+    "bucket": "pmdp-dev-landing-us-east-2-430086246924",
+    "prefixes": ["cdc/rmrg/", "cdc/scc/", "batch/scc/", "schemas/", "checkpoints/", "replay/"],
+    "cdc_base_prefixes": {"rmrg": "cdc/rmrg", "scc": "cdc/scc"},
+    "tags": {"Project": "pmdp", "Environment": "dev", "Role": "landing", "ManagedBy": "pmdp-s3-provisioner"}
+  },
   "kafka": {
     "service": "pmdp-dev-enterprise-kafka",
     "topics": [
